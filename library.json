@@ -1,0 +1,15 @@
+{
+  "name": "I2SClockBasedLedDriver",
+  "keywords": "APA102",
+  "description": "Supports for Esp32.  Support forClock based led pixels.  up to 16 stips in full parallel mode.",
+  "homepage": "ttps://github.com/hpwit/I2SClocklessLedDriver",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/hpwit/I2SClocklessLedDriver"
+  },
+  "version": "1.0.0",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
+
