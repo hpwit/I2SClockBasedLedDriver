@@ -1,6 +1,8 @@
 
 #pragma once
-#include "FastLED.h" //to have the type CRGB
+#ifdef USE_FASTLED
+    #include "FastLED.h" //to have the type CRGB
+#endif
 
 /*Definition des pixels*/
 #define APA102 0
@@ -89,7 +91,7 @@ struct Pixel {
          //brigthness =0xE0 |(rhs.bred&31);      
         return *this;
     }
-
+#ifdef USE_FASTLED
 inline Pixel &operator= (const CRGB& rhs) __attribute__((always_inline))
     {
         red = rhs.r;
@@ -97,7 +99,7 @@ inline Pixel &operator= (const CRGB& rhs) __attribute__((always_inline))
         blue = rhs.b;
         return *this;
     }
-   
+   #endif
 
 inline Pixel (const Pixel& rhs) __attribute__((always_inline))
      {
@@ -118,27 +120,29 @@ inline Pixel (const Pixel& rhs) __attribute__((always_inline))
 };
 
 
-#define B0 1
-#define B1 0
-#define B2 2
-#define B3 0
-#define B4 0
-#define B5 0
-#define B6 0
-#define B7 0
-#define B8 0
-#define B9 0
-#define B10 0
-#define B11 0
-#define B12 0
-#define B13 0
-#define B14 0
-#define B15 0
-#define B16 0
-#define B17 0
-#define B18 0
-#define B19 0
+#define BA0 1
+#define BA1 0
+#define BA2 2
+#define BA3 0
+#define BA4 0
+#define BA5 0
+#define BA6 0
+#define BA7 0
+#define BA8 0
+#define BA9 0
+#define BA10 0
+#define BA11 0
+#define BA12 0
+#define BA13 0
+#define BA14 0
+#define BA15 0
+#define BA16 0
+#define BA17 0
+#define BA18 0
+#define BA19 0
 
+#define DATA_SIZE 1
+#define BRIGHTNESS 0
 #define NUMBER_OF_BLOCK 3
 #define START_FRAME_SIZE 3
 #define END_FRAME 0
@@ -178,7 +182,7 @@ struct Pixel {
          brigthness =0xE0 |(rhs.bred&31);      
         return *this;
     }
-
+#ifdef USE_FASTLED
 inline Pixel &operator= (const CRGB& rhs) __attribute__((always_inline))
     {
         red = rhs.r;
@@ -186,7 +190,7 @@ inline Pixel &operator= (const CRGB& rhs) __attribute__((always_inline))
         blue = rhs.b;
         return *this;
     }
-   
+   #endif
 
 inline Pixel (const Pixel& rhs) __attribute__((always_inline))
      {
@@ -207,27 +211,29 @@ inline Pixel (const Pixel& rhs) __attribute__((always_inline))
 };
 
 
-#define B0 0
-#define B1 3
-#define B2 2
-#define B3 1
-#define B4 0
-#define B5 0
-#define B6 0
-#define B7 0
-#define B8 0
-#define B9 0
-#define B10 0
-#define B11 0
-#define B12 0
-#define B13 0
-#define B14 0
-#define B15 0
-#define B16 0
-#define B17 0
-#define B18 0
-#define B19 0
+#define BA0 0
+#define BA1 3
+#define BA2 2
+#define BA3 1
+#define BA4 0
+#define BA5 0
+#define BA6 0
+#define BA7 0
+#define BA8 0
+#define BA9 0
+#define BA10 0
+#define BA11 0
+#define BA12 0
+#define BA13 0
+#define BA14 0
+#define BA15 0
+#define BA16 0
+#define BA17 0
+#define BA18 0
+#define BA19 0
 
+#define DATA_SIZE 1
+#define BRIGHTNESS 1
 #define NUMBER_OF_BLOCK 4
 #define START_FRAME_SIZE 4
 #define END_FRAME 1
@@ -257,18 +263,24 @@ inline Pixel(uint8_t br,uint16_t r, uint8_t bg,uint16_t g,uint8_t bb,uint16_t b)
     brigthness =0x8000 | ((br&31)<<10)|((bg&31)<<5) |(bb&31);
 }
 
-	inline Pixel() __attribute__((always_inline))
+inline Pixel(uint16_t r, uint16_t g, uint16_t b) __attribute__((always_inline))
+:red(r),green(g),blue(b)
+{
+
+}
+
+	inline Pixel() __attribute__((always_inline)):brigthness(0xffff) 
     {
     }
      
-     inline Pixel (const HD108Led& rhs) __attribute__((always_inline))
+     inline Pixel (const Pixel& rhs) __attribute__((always_inline))
      {
          brigthness=rhs.brigthness;
          red=rhs.red;
          green=rhs.green;
          blue=rhs.blue;
      }
-
+#ifdef USE_FASTLED
 	inline Pixel &operator= (const CRGB& rhs) __attribute__((always_inline))
     {
         red = rhs.r;
@@ -276,7 +288,7 @@ inline Pixel(uint8_t br,uint16_t r, uint8_t bg,uint16_t g,uint8_t bb,uint16_t b)
         blue = rhs.b;
         return *this;
     }
-
+#endif
 
 
     inline Pixel &operator= (const IndvBrightness& rhs) __attribute__((always_inline))
@@ -295,29 +307,31 @@ inline Pixel(uint8_t br,uint16_t r, uint8_t bg,uint16_t g,uint8_t bb,uint16_t b)
     
 };
 
-#define B0 1
-#define B1 0
-#define B2 3
-#define B3 2
-#define B4 5
-#define B5 4
-#define B6 7
-#define B7 6
-#define B8 0
-#define B9 0
-#define B10 0
-#define B11 0
-#define B12 0
-#define B13 0
-#define B14 0
-#define B15 0
-#define B16 0
-#define B17 0
-#define B18 0
-#define B19 0
+#define BA0 1
+#define BA1 0
+#define BA2 3
+#define BA3 2
+#define BA4 5
+#define BA5 4
+#define BA6 7
+#define BA7 6
+#define BA8 0
+#define BA9 0
+#define BA10 0
+#define BA11 0
+#define BA12 0
+#define BA13 0
+#define BA14 0
+#define BA15 0
+#define BA16 0
+#define BA17 0
+#define BA18 0
+#define BA19 0
 
+#define DATA_SIZE 2
+#define BRIGHTNESS 1
 #define NUMBER_OF_BLOCK 8
-#define START_FRAME_SIZE 8
+#define START_FRAME_SIZE 16
 #define END_FRAME 0
 //static uint8_t f8[8]={1,0,3,2,5,4,7,6}; //brightness,red,green,blue
 //static PixelStruct HD108=PixelStruct(2,4,f8,8,false); //4 blocks of 2*8bits
