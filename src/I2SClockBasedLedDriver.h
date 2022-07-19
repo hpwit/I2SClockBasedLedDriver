@@ -27,6 +27,10 @@
 #define NUMSTRIPS 16
 #endif
 
+#ifndef MAX_BRIGHTNESS
+#define MAX_BRIGHTNESS 255
+#endif
+
 #ifndef SNAKEPATTERN
 #define SNAKEPATTERN 1
 #endif
@@ -198,7 +202,7 @@ public:
 
     void setGlobalBrightness(uint16_t brightness)
     {
-        _brightness = brightness;
+        _brightness = brightness % MAX_BRIGHTNESS;
         float tmp;
         for (int i = 0; i < 256; i++)
         {
@@ -316,9 +320,10 @@ public:
     {
         DMABuffersTampon[0] = allocateDMABuffer(NUMBER_OF_BLOCK * 8 * 2 ); //the buffers for the
         DMABuffersTampon[1] = allocateDMABuffer(NUMBER_OF_BLOCK * 8 * 2 );
-        DMABuffersTampon[2] = allocateDMABuffer(START_FRAME_SIZE * 8 * 16 * 2 * 2 );
+        DMABuffersTampon[2] = allocateDMABuffer(START_FRAME_SIZE * 8 * 2 );
         DMABuffersTampon[3] = allocateDMABuffer((NUM_LEDS_PER_STRIP * 2 ));
-        memset(DMABuffersTampon[3]->buffer,255,(NUM_LEDS_PER_STRIP * 2 ));
+        memset(DMABuffersTampon[3]->buffer,END_FRAME * 255,(NUM_LEDS_PER_STRIP * 2 ));
+         memset(DMABuffersTampon[2]->buffer,0,(START_FRAME_SIZE * 8 * 2));
 
         //putdefaultones((uint16_t *)DMABuffersTampon[0]->buffer);
         //putdefaultones((uint16_t *)DMABuffersTampon[1]->buffer);
@@ -550,6 +555,7 @@ public:
         xSemaphoreTake(I2SClockBasedLedDriver_semSync, portMAX_DELAY);
     }
 #endif
+//here remplacer par un uint32t !!!!!
     void setPixel(uint32_t pos, uint8_t red, uint8_t green, uint8_t blue, uint8_t white)
     {
         uint8_t *offset = leds + (pos << 2); //faster than doing * 4
@@ -908,7 +914,7 @@ static void IRAM_ATTR _I2SClockBasedLedDriverinterruptHandler(void *arg)
             if (cont->ledToDisplay < NUM_LEDS_PER_STRIP)
             {
                 loadAndTranspose(cont->leds, cont->num_led_per_strip, cont->num_strips, cont->_offsetDisplay, cont->DMABuffersTampon[cont->dmaBufferActive]->buffer, cont->ledToDisplay, cont->__green_map, cont->__red_map, cont->__blue_map, cont->__white_map, cont->nb_components, cont->p_g, cont->p_r, cont->p_b,cont->_brightness);
-                if (cont->ledToDisplay == cont->num_led_per_strip - 4) //here it's not -1 because it takes time top have the change into account and it reread the buufer
+                if (cont->ledToDisplay == cont->num_led_per_strip - OFFSET_LED) //here it's not -1 because it takes time top have the change into account and it reread the buufer
                 {
                     cont->DMABuffersTampon[cont->dmaBufferActive]->descriptor.qe.stqe_next = &(cont->DMABuffersTampon[3]->descriptor);
                 }
@@ -1017,7 +1023,7 @@ static void IRAM_ATTR loadAndTranspose(uint8_t *ledt, int led_per_strip, int num
     Lines secondPixel[NUMBER_OF_BLOCK];
     //uint8_t *poli=ledt+ledtodisp*NUMBER_OF_BLOCK;
             uint8_t p2,p1;
-            uint16_t f;
+            uint32_t f;
     uint32_t offp, offi, offsetled;
     uint8_t _g, _r, _b;
     int x, y, X, Y, deltaY;
@@ -1141,43 +1147,43 @@ static void IRAM_ATTR loadAndTranspose(uint8_t *ledt, int led_per_strip, int num
     #if DATA_SIZE == 1
             secondPixel[BA2].bytes[i]=mapg[*(poli+2)];
     #else
-             f=(*((uint16_t *)(poli+2)))/brightness;
+             f=(*((uint16_t *)(poli+2)))*brightness/MAX_BRIGHTNESS;
              p1=f>>8;
              p2=f&255;
-            secondPixel[BA2].bytes[i]=p1;
+            secondPixel[BA2].bytes[i]=p2;
     #endif
 #endif
 #if NUMBER_OF_BLOCK >=4
     #if DATA_SIZE == 1
         secondPixel[BA3].bytes[i]=mapb[*(poli+3)];
     #else
-         secondPixel[BA3].bytes[i]=p2;
+         secondPixel[BA3].bytes[i]=p1;
     #endif
 #endif
 #if NUMBER_OF_BLOCK >=5
     #if DATA_SIZE == 2
-             f=(*((uint16_t *)(poli+4)))/brightness;
+             f=(*((uint16_t *)(poli+4)))*brightness/MAX_BRIGHTNESS;
              p1=f>>8;
              p2=f&255;
-        secondPixel[BA4].bytes[i]=p1;
+        secondPixel[BA4].bytes[i]=p2;
     #endif
 #endif
 #if NUMBER_OF_BLOCK >=6
         #if DATA_SIZE == 2
-             secondPixel[BA5].bytes[i]=p2;
+             secondPixel[BA5].bytes[i]=p1;
         #endif
 #endif
 #if NUMBER_OF_BLOCK >=7
     #if DATA_SIZE == 2
-             f=(*((uint16_t *)(poli+6)))/brightness;
+             f=(*((uint16_t *)(poli+6)))*brightness/MAX_BRIGHTNESS;
              p1=f>>8;
              p2=f&255;
-             secondPixel[BA6].bytes[i]=p1;
+             secondPixel[BA6].bytes[i]=p2;
     #endif
 #endif
 #if NUMBER_OF_BLOCK >=8
     #if DATA_SIZE == 2
-        secondPixel[BA7].bytes[i]=p2;
+        secondPixel[BA7].bytes[i]=p1;
     #endif
 #endif
 #if NUMBER_OF_BLOCK >=9
